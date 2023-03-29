@@ -93,13 +93,12 @@ namespace TripsTrapsTrull
         }
         async void Voidu_kontroll()
         {
-            //if (img.AutomationId == )
-            //{
-            //ImageSource circle = ImageSource.FromFile("white.png");
+            //if (img.AutomationId == ) {}
             ImageSource cross = ImageSource.FromFile("cross.png");
+
+            //ImageSource circle = ImageSource.FromFile("circle.png");
             //string circle = "circle.png";
-            Image circle = new Image();
-            circle.Source = ImageSource.FromFile("white.png");
+            Image circle = new Image { Source = ImageSource.FromFile("circle.png") };
 
             if (images[0].Source == circle.Source && images[1].Source == circle.Source && images[2].Source == circle.Source)
             {
