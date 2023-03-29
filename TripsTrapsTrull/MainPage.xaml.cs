@@ -99,11 +99,9 @@ namespace TripsTrapsTrull
             ImageSource cross = ImageSource.FromFile("cross.png");
             //string circle = "circle.png";
             Image circle = new Image();
-            circle.Source = ImageSource.FromFile("circle.png");
+            circle.Source = ImageSource.FromFile("white.png");
 
-            if (images[0].Source == circle.Source && images[1].Source == circle.Source && images[2].Source == circle.Source ||
-                images[3].Source == circle.Source && images[4].Source == circle.Source && images[5].Source == circle.Source ||
-                images[6].Source == circle.Source && images[7].Source == circle.Source && images[8].Source == circle.Source)
+            if (images[0].Source == circle.Source && images[1].Source == circle.Source && images[2].Source == circle.Source)
             {
                 await DisplayAlert("WIN","Second on võitnud","OK");
             }
