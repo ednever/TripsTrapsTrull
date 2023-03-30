@@ -17,13 +17,14 @@ namespace TripsTrapsTrull
         {
             Label label = new Label 
             { 
-                Text = "Trips Traps Trull", FontSize = 20, TextColor = Color.Black, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center 
-            };
-
-            
+                Text = "Trips Traps Trull", 
+                FontSize = 20, 
+                TextColor = Color.Black, 
+                HorizontalOptions = LayoutOptions.Center, 
+                VerticalOptions = LayoutOptions.Center 
+            };            
 
             Uus_mang();
-            Voidu_kontroll();
 
             Button button = new Button { Text = "Uus mäng" };
             button.Clicked += Button_Clicked;
@@ -95,28 +96,52 @@ namespace TripsTrapsTrull
         {
             //if (img.AutomationId == ) {}
             ImageSource cross = ImageSource.FromFile("cross.png");
+            ImageSource circle = ImageSource.FromFile("circle.png");
 
-            //ImageSource circle = ImageSource.FromFile("circle.png");
-            //string circle = "circle.png";
-            Image circle = new Image { Source = ImageSource.FromFile("circle.png") };
+            List<ImageSource> sources = new List<ImageSource> { cross, circle };
 
-            if (images[0].Source == circle.Source && images[1].Source == circle.Source && images[2].Source == circle.Source)
-            {
-                await DisplayAlert("WIN","Second on võitnud","OK");
-            }
+
+
+            //Оптимизация правил (только с ноликом)
+            //Next level оптимизация под списки >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
+            //for (int i = 0; i < 3; i += 3) //Выигрыш в ряд
+            //{
+            //    if (images[i].Source == circle.Source && images[i + 1].Source == circle.Source && images[i + 2].Source == circle.Source)
+            //    {
+            //        await DisplayAlert("WIN", "Second on võitnud", "OK");
+            //    }
+            //}
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    if (images[i].Source == circle.Source && images[i + 3].Source == circle.Source && images[i + 6].Source == circle.Source)
+            //    {
+            //        await DisplayAlert("WIN", "Second on võitnud", "OK");
+            //    }
+            //}
+            //if (images[0].Source == circle.Source && images[4].Source == circle.Source && images[8].Source == circle.Source ||
+            //    images[6].Source == circle.Source && images[4].Source == circle.Source && images[2].Source == circle.Source)
+            //{
+            //    await DisplayAlert("WIN", "Second on võitnud", "OK");
+            //}
+            
+
             //}
             //Если в ячейках
-            //1, 2, 3;
-            //4, 5, 6;
-            //7, 8, 9;
+            //1, 2, 3; >>> 0, 1, 2
+            //4, 5, 6; >>> 3, 4, 5
+            //7, 8, 9; >>> 6, 7, 8
             //
-            //1, 4, 7;
-            //2, 5, 8;
-            //3, 6, 9;
+            //1, 4, 7; >>> 0, 3, 6
+            //2, 5, 8; >>> 1, 4, 7
+            //3, 6, 9; >>> 2, 5, 8
             //
-            //1, 5, 9
-            //7, 5, 3
+            //1, 5, 9 >>> 0, 4, 8
+            //7, 5, 3 >>> 6, 4, 2
             //одинаковые картинки, то игра выиграна
+
+            //идея со списком >>> не работает
+            //идея содержит ли список из 2 картинок (прошлую идею)
+            //идея с двумерным массивом и передачей информации местоположения (ряд, колонка)
         }
     }
 }
