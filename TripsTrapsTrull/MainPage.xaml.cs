@@ -16,7 +16,9 @@ namespace TripsTrapsTrull
         List<Image> images = new List<Image>();
         Image cross = new Image { Source = ImageSource.FromFile("cross.png") };
         Image circle = new Image { Source = ImageSource.FromFile("circle.png") };
-        
+        List<string> sources;
+
+
         public MainPage()
         {
             Label label = new Label 
@@ -61,6 +63,7 @@ namespace TripsTrapsTrull
 
         void Uus_mang()
         {
+            taps = 0;
             images.Clear();
             grid.Children.Clear();
             for (int i = 0; i < 3; i++)
@@ -96,35 +99,33 @@ namespace TripsTrapsTrull
                 }
             }
         }
-        async void Voidu_kontroll()
+        void Voidu_kontroll()
         {
-            List<string> sources = new List<string> { cross.ToString(), circle.ToString() };
-            //Оптимизация правил 
-            //Next level оптимизация под списки >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
-            for (int i = 0; i < sources.Count; i++)
-            {                
-                for (int j = 0; j < 3; j += 3) //Выигрыш по ряду
+            sources = new List<string> { cross.Source.ToString(), circle.Source.ToString() };
+            
+            foreach (string item in sources)
+            {
+                for (int i = 0; i < 9; i += 3) //Выигрыш по ряду
                 {
-                    if (images[j].ToString() == sources[i] && images[j + 1].ToString() == sources[i] && images[j + 2].ToString() == sources[i])
+                    if (images[i].Source.ToString() == item && images[i + 1].Source.ToString() == item && images[i + 2].Source.ToString() == item)
                     {
-                        await DisplayAlert("WIN", sources[i] + " on võitnud", "OK");
+                        Voit(item);
                     }
-                }               
-                //for (int j = 0; j < 3; j++) //Выигрыш по колонке
-                //{
-                //    if (images[j].Source == sources[i] && images[j + 3].Source == sources[i] && images[j + 6].Source == sources[i])
-                //    {
-                //        await DisplayAlert("WIN", sources[i].ToString() + " on võitnud", "OK");
-                //    }
-                //}
-                ////Выигрыш по диагонали
-                //if (images[0].Source == sources[i] && images[4].Source == sources[i] && images[8].Source == sources[i] ||
-                //    images[6].Source == sources[i] && images[4].Source == sources[i] && images[2].Source == sources[i])
-                //{
-                //    await DisplayAlert("WIN", sources[i].ToString() + " on võitnud", "OK");
-                //}
+                }
+                for (int i = 0; i < 3; i++) //Выигрыш по колонке
+                {
+                    if (images[i].Source.ToString() == item && images[i + 3].Source.ToString() == item && images[i + 6].Source.ToString() == item)
+                    {
+                        Voit(item);
+                    }
+                }
+                //Выигрыш по диагонали
+                if (images[0].Source.ToString() == item && images[4].Source.ToString() == item && images[8].Source.ToString() == item ||
+                    images[6].Source.ToString() == item && images[4].Source.ToString() == item && images[2].Source.ToString() == item)
+                {
+                    Voit(item);
+                }
             }
-
 
             //Если в ячейках
             //1, 2, 3; >>> 0, 1, 2
@@ -135,13 +136,23 @@ namespace TripsTrapsTrull
             //2, 5, 8; >>> 1, 4, 7
             //3, 6, 9; >>> 2, 5, 8
             //
-            //1, 5, 9 >>> 0, 4, 8
-            //7, 5, 3 >>> 6, 4, 2
+            //1, 5, 9 >>> 0, 4, 8  >>> 0, (0 - 4)
+            //7, 5, 3 >>> 6, 4, 2  >>> 6, (6 - 4)
             //одинаковые картинки, то игра выиграна
 
-            //идея со списком >>> не работает
-            //идея содержит ли список из 2 картинок (прошлую идею) >>> не работает
-            //идея с двумерным массивом и передачей информации местоположения (ряд, колонка)
+            //Next level оптимизация под списки >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
+        }
+        async void Voit(string voitja)
+        {            
+            if (sources.IndexOf(voitja) == 0)
+            {
+                await DisplayAlert("Õnnitlus", "Ristid võitsid!", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Õnnitlus", "Nullid võitsid!", "OK");
+            }            
+            Uus_mang();
         }
     }
 }
