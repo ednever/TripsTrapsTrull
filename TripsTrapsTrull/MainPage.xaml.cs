@@ -78,7 +78,8 @@ namespace TripsTrapsTrull
             layouts[1].Children.Remove(buttons[3]); //Удаление Button "O" из нижнего StackLayout
 
             StackLayout st = new StackLayout { Children = { labels[0], layouts[0], grid, layouts[1] } };
-            Content = st;            
+            Content = st;
+            st.BackgroundColor = Color.PeachPuff;
 
             Uus_mang();
         }
@@ -91,13 +92,13 @@ namespace TripsTrapsTrull
             Image img = (Image)sender;
             if (taps % 2 == 0)
             {
-                img.Source = ImageSource.FromFile("circle.png");
+                img.Source = circle.Source;
                 buttons[3].BackgroundColor = Color.LightGray;
                 buttons[2].BackgroundColor = Color.Gray;
             }
             else
             {
-                img.Source = ImageSource.FromFile("cross.png");
+                img.Source = cross.Source;
                 buttons[2].BackgroundColor = Color.LightGray;
                 buttons[3].BackgroundColor = Color.Gray;
             }
@@ -133,6 +134,7 @@ namespace TripsTrapsTrull
                 buttons[2].BackgroundColor = Color.LightGray;
                 buttons[3].BackgroundColor = Color.Gray;
                 taps = 1;
+                Arvuti(arvuti);
             }
         }
         void Uus_mang()
@@ -157,7 +159,7 @@ namespace TripsTrapsTrull
                     {                        
                         HeightRequest = 200,
                         WidthRequest = 200,
-                        Source = ImageSource.FromFile("white.png"),
+                        Source = white.Source,
                         HorizontalOptions = LayoutOptions.Center,
                         VerticalOptions = LayoutOptions.Center,
                     };
@@ -203,13 +205,12 @@ namespace TripsTrapsTrull
                 }
             }
 
+            //Ничья
             bool vabaKoht = true;
             foreach (Image item in images)
             {
                 if (item.Source.ToString() == white.Source.ToString())
-                {
-                    vabaKoht = false;
-                }
+                    vabaKoht = false;                
             }
             if (vabaKoht)
             {
@@ -217,7 +218,6 @@ namespace TripsTrapsTrull
                 string mitteKeegi = string.Empty;
                 Voit(mitteKeegi, voit);
             }
-
 
             //Если в ячейках
             //1, 2, 3 >>> 0, 1, 2
@@ -232,7 +232,7 @@ namespace TripsTrapsTrull
             //7, 5, 3 >>> 6, 4, 2 
             //одинаковые картинки, то игра выиграна
 
-            //Next level оптимизация под списки >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
+            //Next level >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
         }
         async void Voit(string voitja, int onoff2)
         {
@@ -253,37 +253,82 @@ namespace TripsTrapsTrull
                 else
                 {
                     await DisplayAlert("Õnnitlus", "Viik!", "OK");
-                }
+                }                   
+                
                 Uus_mang();
             }
         }
-        async void Arvuti(bool onoff) //Из-за паузы можно нажать быстрее бота. Бот ставит только нолики
+        void Arvuti(bool onoff) //Из-за паузы можно нажать быстрее бота
         {
             //Next Level - бот, который всегда выигрывает
             if (onoff)
             {
-                if (taps % 2 != 0)
+                //Picker picker = new Picker { Items = { "Kerge", "Raske" } };
+                //layouts[1].Children.Add(picker);
+                //picker.PropertyChanging += Picker_PropertyChanging;
+                kerge_b();
+            }            
+        }
+
+        //void Picker_PropertyChanging(object sender, Xamarin.Forms.PropertyChangingEventArgs e)
+        //{
+        //    Picker pckr = (Picker)sender;
+        //    if (pckr.SelectedIndex == 0)
+        //    {
+        //        kerge_b();
+        //    }
+        //    else
+        //    {
+        //        raske_b();
+        //    }
+        //}
+
+        async void kerge_b()
+        {
+            List<Image> vabadKohad = new List<Image>();
+            foreach (Image item in images)
+            {
+                if (item.Source.ToString() == white.Source.ToString())
+                    vabadKohad.Add(item);
+            }
+            if (vabadKohad.Count > 0)
+            {
+                int a = rnd.Next(vabadKohad.Count);
+                await Task.Delay(1000);
+                if (buttons[3].IsEnabled == false)
                 {
-                    List<Image> vabadKohad = new List<Image>();
-                    foreach (Image item in images)
+                    buttons[2].IsEnabled = false;
+                    if (vabadKohad.Count == 9)
                     {
-                        if (item.Source.ToString() == white.Source.ToString())
-                        {
-                            vabadKohad.Add(item);
-                        }
-                    }
-                    if (vabadKohad.Count > 1)
-                    {
-                        int a = rnd.Next(vabadKohad.Count);
-                        await Task.Delay(1000);
-                        vabadKohad[a].Source = circle.Source;
-                        vabadKohad[a].IsEnabled = false;
-                        vabadKohad.Clear();
+                        vabadKohad[a].Source = cross.Source;
                         taps++;
                     }
-                    Voidu_kontroll();
+                    else
+                    {
+                        if (taps % 2 != 0)
+                        {
+                            vabadKohad[a].Source = circle.Source;
+                            buttons[3].BackgroundColor = Color.LightGray;
+                            buttons[2].BackgroundColor = Color.Gray;
+                        }
+                        else if (taps % 2 == 0)
+                        {
+                            vabadKohad[a].Source = cross.Source;
+                            buttons[2].BackgroundColor = Color.LightGray;
+                            buttons[3].BackgroundColor = Color.Gray;
+                        }
+                    }
+
+                    vabadKohad[a].IsEnabled = false;
+                    vabadKohad.Clear();
+                    taps++;
                 }
-            }            
+            }
+            Voidu_kontroll();
+        }
+        async void raske_b()
+        {
+            await Task.Delay(1000);
         }
     }
 }
