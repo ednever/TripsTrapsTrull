@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace TripsTrapsTrull
@@ -12,7 +13,7 @@ namespace TripsTrapsTrull
     public partial class MainPage : ContentPage
     {
         Grid grid = new Grid();
-        Random rnd = new Random();               
+        Random rnd = new Random();
         Image cross = new Image { Source = ImageSource.FromFile("cross.png") };
         Image circle = new Image { Source = ImageSource.FromFile("circle.png") };
         Image white = new Image { Source = ImageSource.FromFile("white.png") };
@@ -26,9 +27,9 @@ namespace TripsTrapsTrull
         List<string> sources;
         List<Image> images = new List<Image>();
         List<Label> labels = new List<Label>();
-        List<string> labelsNames = new List<string> { "Trips Traps Trull", "0", "vs", "0" };
+        List<string> labelsNames = new List<string> { "0", "vs", "0" };
         List<Button> buttons = new List<Button>();
-        List<string> buttonsNames = new List<string> { "Uus mäng", "Mäng arvuti vastu", "X", "O"};
+        List<string> buttonsNames = new List<string> { "Uus mäng", "Mäng arvuti vastu", "X", "O" };
         List<StackLayout> layouts = new List<StackLayout>();
         public MainPage()
         {
@@ -44,7 +45,7 @@ namespace TripsTrapsTrull
                 layouts.Add(st1);
             }
 
-            //Создание Label и Button
+            //Создание Label
             for (int i = 0; i < labelsNames.Count; i++)
             {
                 Label label = new Label
@@ -57,7 +58,11 @@ namespace TripsTrapsTrull
                 };
                 labels.Add(label);
                 layouts[0].Children.Add(label); //Добавление Label в вверхний StackLayout
+            }
 
+            //Создание Button
+            for (int i = 0; i < buttonsNames.Count; i++)
+            {
                 Button button = new Button
                 {
                     Text = buttonsNames[i],
@@ -70,15 +75,15 @@ namespace TripsTrapsTrull
                 layouts[1].Children.Add(button); //Добавление Button в нижний StackLayout
             }
 
-            layouts[0].Children.Remove(labels[0]); //Удаление Заголовка из вверхнего StackLayout
             layouts[0].Children.Insert(0, buttons[2]); //Добавление Button "X" в вверхний StackLayout
             layouts[0].Children.Insert(4, buttons[3]); //Добавление Button "O" в вверхний StackLayout
 
             layouts[1].Children.Remove(buttons[2]); //Удаление Button "X" из нижнего StackLayout
             layouts[1].Children.Remove(buttons[3]); //Удаление Button "O" из нижнего StackLayout
 
-            StackLayout st = new StackLayout { Children = { labels[0], layouts[0], grid, layouts[1] } };
+            StackLayout st = new StackLayout { Children = { layouts[0], grid, layouts[1] } };
             Content = st;
+
             st.BackgroundColor = Color.PeachPuff;
 
             Uus_mang();
@@ -108,7 +113,7 @@ namespace TripsTrapsTrull
             Voidu_kontroll();
         }
         void Button_Clicked(object sender, EventArgs e)
-        {            
+        {
             Button btn = (Button)sender;
             if (btn == buttons[0] || btn == buttons[1])
             {
@@ -156,7 +161,7 @@ namespace TripsTrapsTrull
                 for (int j = 0; j < 3; j++)
                 {
                     Image image = new Image
-                    {                        
+                    {
                         HeightRequest = 200,
                         WidthRequest = 200,
                         Source = white.Source,
@@ -177,7 +182,7 @@ namespace TripsTrapsTrull
         void Voidu_kontroll()
         {
             sources = new List<string> { cross.Source.ToString(), circle.Source.ToString() };
-            
+
             foreach (string item in sources)
             {
                 for (int i = 0; i < 9; i += 3) //Выигрыш по ряду
@@ -197,11 +202,13 @@ namespace TripsTrapsTrull
                     }
                 }
                 //Выигрыш по диагонали
-                if (images[0].Source.ToString() == item && images[4].Source.ToString() == item && images[8].Source.ToString() == item ||
-                    images[6].Source.ToString() == item && images[4].Source.ToString() == item && images[2].Source.ToString() == item)
+                for (int i = 0; i < 7; i += 6)
                 {
-                    voit++;
-                    Voit(item, voit);
+                    if (images[i].Source.ToString() == item && images[i * 0 + 4].Source.ToString() == item && images[i * 0 + 8 - i].Source.ToString() == item)
+                    {
+                        voit++;
+                        Voit(item, voit);
+                    }
                 }
             }
 
@@ -210,7 +217,7 @@ namespace TripsTrapsTrull
             foreach (Image item in images)
             {
                 if (item.Source.ToString() == white.Source.ToString())
-                    vabaKoht = false;                
+                    vabaKoht = false;
             }
             if (vabaKoht)
             {
@@ -218,21 +225,6 @@ namespace TripsTrapsTrull
                 string mitteKeegi = string.Empty;
                 Voit(mitteKeegi, voit);
             }
-
-            //Если в ячейках
-            //1, 2, 3 >>> 0, 1, 2
-            //4, 5, 6 >>> 3, 4, 5
-            //7, 8, 9 >>> 6, 7, 8
-            //
-            //1, 4, 7 >>> 0, 3, 6
-            //2, 5, 8 >>> 1, 4, 7
-            //3, 6, 9 >>> 2, 5, 8
-            //
-            //1, 5, 9 >>> 0, 4, 8  
-            //7, 5, 3 >>> 6, 4, 2 
-            //одинаковые картинки, то игра выиграна
-
-            //Next level >>> в for длина Math.Sqrt(images.Count) + создание переменной, считающая совпадения
         }
         async void Voit(string voitja, int onoff2)
         {
@@ -242,47 +234,31 @@ namespace TripsTrapsTrull
                 {
                     await DisplayAlert("Õnnitlus", "Ristid võitsid!", "OK");
                     red++;
-                    labels[1].Text = red.ToString();
+                    labels[0].Text = red.ToString();
+                    Preferences.Set("Rist", "X võitis (" + DateTime.Now + ")");
                 }
                 else if (sources.IndexOf(voitja) == 1)
                 {
                     await DisplayAlert("Õnnitlus", "Nullid võitsid!", "OK");
                     blue++;
-                    labels[3].Text = blue.ToString();
+                    labels[2].Text = blue.ToString();
+                    Preferences.Set("Null", "0 võitis (" + DateTime.Now + ")");
                 }
                 else
                 {
                     await DisplayAlert("Õnnitlus", "Viik!", "OK");
-                }                   
-                
+                }
+
                 Uus_mang();
             }
         }
         void Arvuti(bool onoff) //Из-за паузы можно нажать быстрее бота
         {
-            //Next Level - бот, который всегда выигрывает
             if (onoff)
             {
-                //Picker picker = new Picker { Items = { "Kerge", "Raske" } };
-                //layouts[1].Children.Add(picker);
-                //picker.PropertyChanging += Picker_PropertyChanging;
                 kerge_b();
-            }            
+            }
         }
-
-        //void Picker_PropertyChanging(object sender, Xamarin.Forms.PropertyChangingEventArgs e)
-        //{
-        //    Picker pckr = (Picker)sender;
-        //    if (pckr.SelectedIndex == 0)
-        //    {
-        //        kerge_b();
-        //    }
-        //    else
-        //    {
-        //        raske_b();
-        //    }
-        //}
-
         async void kerge_b()
         {
             List<Image> vabadKohad = new List<Image>();
@@ -326,9 +302,9 @@ namespace TripsTrapsTrull
             }
             Voidu_kontroll();
         }
-        async void raske_b()
+        protected override void OnAppearing()
         {
-            await Task.Delay(1000);
+            base.OnAppearing();
         }
     }
 }
